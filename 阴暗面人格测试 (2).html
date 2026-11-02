@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阴暗面影视人格测试</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #e8e2d5;
+    color: #2c2c2c;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px 16px;
+  }
+  .container {
+    width: 100%;
+    max-width: 480px;
+    background: #f5f1e8;
+    border: 1px solid #2c2c2c;
+    padding: 32px 24px;
+    min-height: calc(100vh - 40px);
+  }
+
+  /* 进度条 */
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #d9d3c5;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #2c2c2c;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .progress-text {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* 按钮 */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    background: #faf7f0;
+    border: 1.5px solid #2c2c2c;
+    color: #2c2c2c;
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 12px;
+    font-family: inherit;
+  }
+  .btn:hover { background: #2c2c2c; color: #f5f1e8; }
+  .btn:active { transform: scale(0.98); }
+  .btn-dark {
+    background: #2c2c2c;
+    color: #f5f1e8;
+  }
+  .btn-dark:hover { background: #1a1a1a; }
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .btn-group .btn { margin-bottom: 0; flex: 1; }
+
+  /* 封面页 */
+  .cover {
+    text-align: center;
+    padding: 60px 0;
+    min-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cover-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+  .cover-sub {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+  .cover-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+  }
+
+  /* 答题页 */
+  .question-card {
+    background: #faf7f0;
+    border: 1px solid #d0c9b8;
+    padding: 28px 20px;
+    margin-bottom: 20px;
+  }
+  .question-num {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .option {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    background: #f5f1e8;
+    border: 1px solid #2c2c2c;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+    transition: all 0.15s;
+    font-family: inherit;
+    color: #2c2c2c;
+  }
+  .option:hover { background: #2c2c2c; color: #f5f1e8; }
+  .option.selected {
+    background: #2c2c2c;
+    color: #f5f1e8;
+  }
+
+  /* 付款页 */
+  .pay-section {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .pay-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .pay-price {
+    font-size: 32px;
+    font-weight: 700;
+    color: #c0392b;
+    margin: 16px 0;
+  }
+  .pay-desc {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .qrcode-box {
+    width: 240px;
+    height: 240px;
+    margin: 0 auto 24px;
+    border: 1px solid #d0c9b8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .qrcode-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 结果页 */
+  .result-header {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #d0c9b8;
+    margin-bottom: 24px;
+  }
+  .score-display {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 12px 0;
+  }
+  .score-label {
+    font-size: 13px;
+    color: #888;
+  }
+  .score-desc {
+    font-size: 14px;
+    color: #666;
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+  .character-box {
+    text-align: center;
+    margin: 24px 0;
+  }
+  .character-img {
+    width: 220px;
+    height: 300px;
+    margin: 0 auto 16px;
+    border: 1.5px solid #2c2c2c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+  .character-img .char-emoji {
+    font-size: 56px;
+    margin-bottom: 16px;
+  }
+  .character-img .char-movie-label {
+    font-size: 13px;
+    color: #888;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .character-img .char-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .char-bg-1 { background: linear-gradient(135deg, #f5f1e8 0%, #e8e2d5 100%); }
+  .char-bg-2 { background: linear-gradient(135deg, #e8e2d5 0%, #d9d3c5 100%); }
+  .char-bg-3 { background: linear-gradient(135deg, #d9d3c5 0%, #c9c0a8 100%); }
+  .char-bg-4 { background: linear-gradient(135deg, #c9c0a8 0%, #b5a98c 100%); }
+  .char-bg-5 { background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); color: #f5f1e8; }
+  .character-name {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .character-movie {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+  }
+  .reason-box {
+    background: #faf7f0;
+    border: 1px solid #d0c9b8;
+    padding: 16px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .personality-grid {
+    margin: 24px 0;
+  }
+  .personality-item {
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0d9c8;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .personality-item:last-child { border-bottom: none; }
+  .personality-label {
+    width: 90px;
+    flex-shrink: 0;
+    font-weight: 600;
+    color: #555;
+  }
+  .personality-value {
+    flex: 1;
+    color: #333;
+  }
+  .least-box {
+    background: #faf7f0;
+    border: 1px solid #d0c9b8;
+    padding: 16px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* 底部 */
+  .footer {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #d0c9b8;
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    line-height: 2;
+  }
+  .donate-box {
+    margin: 24px 0;
+    padding: 20px;
+    border: 1px solid #d0c9b8;
+    background: #faf7f0;
+  }
+  .donate-text {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+    line-height: 1.8;
+  }
+  .donate-qr {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto;
+    border: 1px solid #d0c9b8;
+    background: #fff;
+    overflow: hidden;
+  }
+  .donate-qr img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  @media (max-width: 480px) {
+    .container { padding: 24px 16px; }
+    .cover-title { font-size: 24px; }
+    .score-display { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 封面页 -->
+  <div id="page-cover" class="page active">
+    <div class="cover">
+      <div class="cover-icon">🎬</div>
+      <h1 class="cover-title">阴暗面影视人格测试</h1>
+      <p class="cover-sub">
+        18道题，测出你内心深处的阴暗面数值<br>
+        看看你最像哪部电影里的哪个角色<br>
+        仅供娱乐，非专业心理诊断
+      </p>
+      <button class="btn btn-dark" onclick="startTest()">开始测试</button>
+    </div>
+  </div>
+
+  <!-- 答题页 -->
+  <div id="page-quiz" class="page">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">第 1 / 18 题</div>
+    <div class="question-card">
+      <div class="question-num" id="qNum">QUESTION 01</div>
+      <div class="question-text" id="qText"></div>
+      <div id="optionsBox"></div>
+    </div>
+  </div>
+
+  <!-- 付款页 -->
+  <div id="page-pay" class="page">
+    <div class="pay-section">
+      <div class="pay-title">解锁你的专属测试结果</div>
+      <div class="pay-price">¥0.69</div>
+      <p class="pay-desc">
+        付完点击下方按钮查看结果<br>
+        你的结果独一无二，包含阴暗面指数、电影角色匹配、七维性格画像
+      </p>
+      <div class="qrcode-box">
+        <img src="https://aka.doubaocdn.com/s/OGWF8T4KDA" alt="微信收款码">
+      </div>
+      <button class="btn btn-dark" onclick="unlockResult()">我已付款，查看结果</button>
+      <p style="font-size:11px;color:#aaa;margin-top:12px;">支持原创，才能持续创作 ٩(ˊᗜˋ*)و</p>
+    </div>
+  </div>
+
+  <!-- 结果页 -->
+  <div id="page-result" class="page">
+    <div class="result-header">
+      <div class="score-label">你的阴暗面指数</div>
+      <div class="score-display" id="scoreDisplay">--</div>
+      <div class="score-desc" id="scoreDesc"></div>
+    </div>
+
+    <div class="character-box">
+      <div class="character-img" id="charImg"></div>
+      <div class="character-name" id="charName"></div>
+      <div class="character-movie" id="charMovie"></div>
+    </div>
+
+    <div class="reason-box" id="reasonBox"></div>
+
+    <div class="personality-grid" id="personalityGrid"></div>
+
+    <div class="least-box" id="leastBox"></div>
+
+    <div class="btn-group">
+      <button class="btn" onclick="restart()">再测一次</button>
+      <button class="btn" onclick="shareResult()">分享给朋友</button>
+    </div>
+
+    <div class="donate-box">
+      <div class="donate-text">感谢天使宝宝的投喂，呜谢位等待你来 (´▽｀) 爱你呀欧尼</div>
+      <div class="donate-qr">
+        <img src="https://aka.doubaocdn.com/s/OGWF8T4KDA" alt="投喂二维码">
+      </div>
+    </div>
+
+    <div class="footer">
+      市面上要求截屏的都是盗版链接，谨防受骗！<br>
+      支持正版，才能持续创作！ψ(｀∇´)ψ<br>
+      本测试仅供娱乐，不构成任何专业建议
+    </div>
+  </div>
+
+</div>
+
+<script>
+// 题目数据 18道
+const questions = [
+  { text: "和别人产生矛盾，你更倾向？", options: ["尽量缓和，避免撕破脸，实在不行就远离", "心里会反复纠结记挂，表面不动声色", "容易情绪上头，会反击或者冷暴力"] },
+  { text: "面对别人的否定指责，你的第一反应？", options: ["先反思自己有没有问题", "内心受伤，但不会当场发作，会暗自介意很久", "本能抵触，会想反驳或者心里记一笔"] },
+  { text: "团队出问题背锅风险来临，你会？", options: ["主动承担该属于自己的部分", "心里权衡利弊，优先保护自己不被过度牵连", "会下意识撇清自己，必要时会为自保说话"] },
+  { text: "看到身边人过得比你好，你内心真实感受？", options: ["真心祝福对方", "会有点羡慕，夹杂一丝微妙不平衡，但不会行动", "会产生嫉妒，隐隐希望对方也遭遇挫折"] },
+  { text: "被人伤害过后，你会？", options: ["选择放下翻篇，很少回头计较", "不会报复，但很难真正原谅，会拉开距离设防", "难以释怀，期待对方得到相应的代价"] },
+  { text: "自己的利益和人情道义冲突时？", options: ["优先顾及人情，适度牺牲自我利益", "两难拉扯，在利己和情义中间反复权衡", "优先保全自身利益，人情放在其次"] },
+  { text: "深夜独处的时候，你的思绪常常？", options: ["比较平和，很少胡思乱想", "容易内耗，反复回想过往委屈、糟心事", "冒出很多消极、尖锐、甚至带攻击性的想法"] },
+  { text: "对待谎言这件事，你？", options: ["尽量真诚，不爱说谎", "会选择性隐瞒部分事实，为了减少麻烦", "必要的时候可以熟练说谎达成目的"] },
+  { text: "亲密关系或者好友关系里，你？", options: ["信任对方，很少猜忌试探", "敏感多疑，会暗中观察试探对方真心", "容易控制欲强，希望事情按照自己预期走"] },
+  { text: "如果现实过得不顺，你内心？", options: ["接纳现实，慢慢想办法改变", "感觉无力压抑，常常陷入自我否定", "会埋怨外界他人，觉得是环境别人造成的"] },
+  { text: "有人当众让你下不来台，你会？", options: ["装作没事，过后自己消化", "表面笑笑，心里已经把这个人拉黑", "当场就怼回去，绝不吃亏"] },
+  { text: "你会不会在背后评价别人？", options: ["很少，基本不议论", "和信任的朋友偶尔吐槽", "经常，而且会刻意放大别人的缺点"] },
+  { text: "遇到比你优秀很多的人，你会？", options: ["主动学习，向对方靠近", "有点自卑，但不会表现出来", "本能的排斥，觉得对方也没什么了不起"] },
+  { text: "你有没有过想要报复的念头？", options: ["没有，过去了就过去了", "有过，但想想就算了，不会真的做", "有过，而且真的付诸过行动"] },
+  { text: "别人拜托你帮忙，你不想帮时会？", options: ["不好意思拒绝，勉强自己帮", "找个借口婉拒", "直接拒绝，无所谓对方怎么想"] },
+  { text: "你觉得自己是个善良的人吗？", options: ["是的，我一直尽量对别人好", "看情况，对喜欢的人好，不喜欢的人无所谓", "善良是弱者的借口，我优先考虑自己"] },
+  { text: "看到别人出糗，你内心？", options: ["赶紧帮忙，觉得对方很可怜", "有点想笑，但会忍住", "暗自窃喜，甚至会当笑话讲给别人听"] },
+  { text: "你藏得住秘密吗？", options: ["很能藏，答应别人的事绝对不说", "对好朋友会忍不住说漏嘴", "秘密？我转头就告诉别人了"] }
+];
+
+// 结果配置 - 按分数段
+const resultConfigs = [
+  { min: 18, max: 24, score: "20-30", level: "天使型", desc: "你内心几乎没有阴暗面，是个纯粹的好人",
+    movie: "海蒂和爷爷", character: "海蒂", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Heidi_1937.jpg/220px-Heidi_1937.jpg",
+    reason: "你天性善良坦荡，很少有算计和防备心。对人真诚，看到别人难过会真心想帮忙，被伤害了也能很快原谅。你的世界里黑白分明，很少有灰色地带。",
+    personality: {
+      "性格": "单纯善良，没什么心眼，对人真诚",
+      "脾气": "很少发火，脾气很好，几乎不记仇",
+      "情商": "待人真诚但不太懂人情世故，偶尔吃亏",
+      "阴暗程度": "极低，内心很少有阴暗想法",
+      "心眼程度": "几乎没心眼，别人说什么都信",
+      "精神状态": "大多时候平和快乐，很少内耗",
+      "解决问题能力": "遇到事容易慌，但愿意求助"
+    },
+    least: "黑暗骑士｜小丑｜你完全无法理解为什么有人会以作恶为乐，和你的善良本质完全相反"
+  },
+  { min: 25, max: 32, score: "35-48", level: "内耗型", desc: "你的阴暗面大多指向自己，容易自我拉扯",
+    movie: "黑天鹅", character: "妮娜", img: "https://upload.wikimedia.org/wikipedia/en/4/4e/Black_Swan_poster.jpg",
+    reason: "你习惯把情绪藏在心底，表面看起来温和懂事，内心却积压了大量纠结和自我拉扯。很在意别人的评价，容易自我施压。被伤害了不会主动报复，但会在心里反复咀嚼很久。",
+    personality: {
+      "性格": "敏感内敛，心思细腻，外表懂事内心拧巴",
+      "脾气": "大多时候克制，积压久了容易隐性爆发",
+      "情商": "懂得维持表面体面，但不太擅长处理自身情绪",
+      "阴暗程度": "中等，阴暗大多指向自我，极少主动算计别人",
+      "心眼程度": "心思重，观察细致，擅长自保但不主动害人",
+      "精神状态": "容易精神内耗，思虑过多，情绪波动藏在内部",
+      "解决问题能力": "遇到冲突习惯回避内耗，行动偏被动"
+    },
+    least: "阿甘正传｜阿甘｜心思简单坦荡，很少思虑权衡，和你的敏感多虑反差极大"
+  },
+  { min: 33, max: 40, score: "55-68", level: "自保型", desc: "你有善意底色，但防备心很重，被触碰底线会记仇",
+    movie: "误杀", character: "李维杰", img: "https://upload.wikimedia.org/wikipedia/en/9/9a/Sheep_with_No_Shepherd.jpg",
+    reason: "你平时待人真诚，有不错的善意底色，但一旦被触碰底线，就会把委屈和恨意藏在心底。遇到风险时优先自保，表面不动声色，内心却反复权衡。你不是坏人，但也绝对不是好欺负的。",
+    personality: {
+      "性格": "外柔内刚，真诚但敏感，有自己的底线",
+      "脾气": "平时温和克制，被惹到后会暗中较劲",
+      "情商": "擅长维持表面体面，能很好隐藏真实情绪",
+      "阴暗程度": "中等偏上，多为被动的防备与报复欲",
+      "心眼程度": "心思较重，擅长观察和自保，不主动害人",
+      "精神状态": "容易陷入自我内耗，思虑过多",
+      "解决问题能力": "遇到大事能冷静筹谋，日常容易情绪拉扯"
+    },
+    least: "海蒂和爷爷｜海蒂｜天真善良不设防，和你的防备心反差很大"
+  },
+  { min: 41, max: 48, score: "72-85", level: "复仇型", desc: "你有仇必报，心思缜密，会为了目的布局",
+    movie: "消失的她", character: "沈曼", img: "https://upload.wikimedia.org/wikipedia/en/8/8a/Lost_in_the_Stars.jpg",
+    reason: "你平时看起来正常甚至有点好说话，但一旦被伤害被背叛，就会触发你的复仇模式。你心思缜密，会默默收集信息布局，让对方付出应有的代价。你信奉的是：人不犯我我不犯人。",
+    personality: {
+      "性格": "冷静理智，恩怨分明，不会轻易相信人",
+      "脾气": "平时看不出脾气，一旦爆发就是雷霆之势",
+      "情商": "极高，擅长伪装和操控局面",
+      "阴暗程度": "高，有清晰的报复欲和执行力",
+      "心眼程度": "很高，观察力强，擅长布局和算计",
+      "精神状态": "大多时候冷静自持，极少情绪失控",
+      "解决问题能力": "极强，遇到问题会冷静分析精准出手"
+    },
+    least: "阿甘正传｜阿甘｜纯粹到没有任何防备心，和你完全相反"
+  },
+  { min: 49, max: 54, score: "88-100", level: "暗黑型", desc: "你的阴暗面已经深度融入性格，利己是本能",
+    movie: "黑暗骑士", character: "小丑", img: "https://upload.wikimedia.org/wikipedia/en/2/2e/TheDarkKnight.jpg",
+    reason: "你内心的阴暗面已经超越了普通的自保和报复，形成了自己的一套价值观。你不相信人性本善，觉得世界本来就是弱肉强食。说谎、操控、利用别人对你来说都是达成目的的手段，没有道德负担。",
+    personality: {
+      "性格": "离经叛道，不按常理出牌，有自己的一套逻辑",
+      "脾气": "难以捉摸，时而疯癫时而冷静",
+      "情商": "极高但扭曲，擅长操控人心和制造混乱",
+      "阴暗程度": "极高，阴暗已经内化成性格的一部分",
+      "心眼程度": "极高，每一步都有目的，别人很难看透你",
+      "精神状态": "边缘型，时而亢奋时而虚无",
+      "解决问题能力": "不走寻常路，经常能想出出人意料的方法"
+    },
+    least: "海蒂和爷爷｜海蒂｜纯粹善良的灵魂，和你是两个极端"
+  }
+];
+
+let currentQ = 0;
+let answers = [];
+let selectedOption = -1;
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startTest() {
+  currentQ = 0;
+  answers = [];
+  showPage('page-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('progressFill').style.width = ((currentQ) / questions.length * 100) + '%';
+  document.getElementById('progressText').textContent = `第 ${currentQ + 1} / ${questions.length} 题`;
+  document.getElementById('qNum').textContent = `QUESTION ${String(currentQ + 1).padStart(2, '0')}`;
+  document.getElementById('qText').textContent = q.text;
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = String.fromCharCode(65 + i) + '. ' + opt;
+    btn.onclick = () => selectOption(i, btn);
+    box.appendChild(btn);
+  });
+  selectedOption = -1;
+}
+
+function selectOption(i, btnEl) {
+  document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  selectedOption = i;
+
+  setTimeout(() => {
+    answers.push(i + 1); // A=1, B=2, C=3
+    currentQ++;
+    if (currentQ >= questions.length) {
+      document.getElementById('progressFill').style.width = '100%';
+      showPage('page-pay');
+    } else {
+      renderQuestion();
+    }
+  }, 200);
+}
+
+function unlockResult() {
+  // 计算总分
+  const total = answers.reduce((a, b) => a + b, 0);
+  const idx = Math.round(((total - 18) / 36) * (resultConfigs.length - 1));
+  const config = resultConfigs[Math.max(0, Math.min(resultConfigs.length - 1, idx))];
+
+  // 计算实际分数
+  const realScore = Math.round(((total - 18) / 36) * 100);
+
+  // 渲染结果
+  document.getElementById('scoreDisplay').textContent = realScore;
+  document.getElementById('scoreDesc').textContent = config.desc;
+  
+  // 角色卡片 - 用CSS设计，不依赖外部图片
+  const bgClass = 'char-bg-' + (idx + 1);
+  const emojiMap = ['🕊️', '🩰', '🎬', '🦊', '🎭'];
+  document.getElementById('charImg').className = 'character-img ' + bgClass;
+  document.getElementById('charImg').innerHTML = `
+    <div class="char-emoji">${emojiMap[idx] || '🎬'}</div>
+    <div class="char-movie-label">${config.movie}</div>
+    <div class="char-title">${config.character}</div>
+  `;
+  document.getElementById('charName').textContent = config.character;
+  document.getElementById('charMovie').textContent = config.movie;
+  document.getElementById('reasonBox').textContent = config.reason;
+
+  // 性格画像
+  const pg = document.getElementById('personalityGrid');
+  pg.innerHTML = '';
+  Object.entries(config.personality).forEach(([k, v]) => {
+    const div = document.createElement('div');
+    div.className = 'personality-item';
+    div.innerHTML = `<div class="personality-label">${k}</div><div class="personality-value">${v}</div>`;
+    pg.appendChild(div);
+  });
+
+  document.getElementById('leastBox').innerHTML = `<strong>最不像的人物：</strong>${config.least}`;
+
+  showPage('page-result');
+}
+
+function restart() {
+  showPage('page-cover');
+}
+
+function shareResult() {
+  const text = '我测了阴暗面人格测试，结果太准了！快来测测你最像哪个电影角色～';
+  if (navigator.share) {
+    navigator.share({ title: '阴暗面影视人格测试', text: text, url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(text + ' ' + window.location.href);
+    alert('链接已复制，快去分享给朋友吧！');
+  }
+}
+</script>
+</body>
+</html>
